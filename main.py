@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 
 import numpy as np
 import pandas as pd
@@ -14,16 +12,21 @@ import os
 import glob
 from pathlib import Path
 
+
+
 #from google.colab import drive
 #drive.mount('/content/gdrive')
 
 #Defines
 #/drive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe
-train_csv_path = "./gdrive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe/train.csv"
-sample_csv_path = "./gdrive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe/sample_submission.csv"
-single_segment = "./gdrive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe/train/1003520023.csv"
-train_data_path = "./gdrive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe/train/"
-test_data_path = "./gdrive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe/test/"
+train_csv_path = "./drive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe/train.csv"
+sample_csv_path = "./drive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe/sample_submission.csv"
+single_segment = "./drive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe/train/1003520023.csv"
+train_data_path = "./drive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe/train/"
+test_data_path = "./drive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe/test/"
+trainParams_path = "./drive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe/feature extraction/trainParams.csv"
+testParams_path = "./drive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe/feature extraction/testParams.csv"
+
 sample_size = 10
 
 train = pd.read_csv(train_csv_path)
@@ -118,6 +121,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.metrics import mean_absolute_error
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
 
 poly_model = make_pipeline(PolynomialFeatures(10),
                            LinearRegression())
@@ -128,3 +132,63 @@ mae
 #3843230 - 1 place
 #11598807 - Our result
 
+"""distribuition all features
+---
+
+
+"""
+
+trainParams = pd.read_csv(trainParams_path)
+testParams = pd.read_csv(testParams_pat)
+
+trainParams
+
+testParams
+
+from matplotlib.backends.backend_pdf import PdfPages
+
+skip = 0
+sensor = 1
+cnt =0
+pathToSensorFolder = "./drive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe/Senosor Features Scatter/Train_vs_Test/"
+for (columnName, columnData) in testParams.iteritems():
+  if(skip>=2):
+    if(cnt>11):
+      sensor = sensor +1
+      cnt = 0
+    print('Colunm Name : ', columnName)
+    #print('Column Contents : ', columnData.values)
+    df=pd.concat([testParams[columnName], trainParams[columnName]], axis=1, keys=['test', 'train'])
+    df.plot(style=['o','rx']).get_figure()
+  #  trainParams.plot.scatter(x=columnName,y='segment_id', c='DarkBlue').get_figure()
+    plt.title(columnName)
+    plt.savefig(pathToSensorFolder+"train_vs_test-"+columnName+".pdf")
+    cnt = cnt +1
+  skip = skip+1
+
+'''
+from matplotlib.backends.backend_pdf import PdfPages
+
+skip = 0
+sensor = 1
+cnt =0
+pathToSensorFolder = "./drive/MyDrive/Kaggle/predict-volcanic-eruptions-ingv-oe/Senosor Features Scatter/Train_vs_Test/"
+for (columnName, columnData) in testParams.iteritems():
+  if(skip>=2):
+    if(cnt>11):
+      sensor = sensor +1
+      cnt = 0
+    print('Colunm Name : ', columnName)
+    #print('Column Contents : ', columnData.values)
+    trainParams.plot.scatter(x=columnName,y='segment_id', c='DarkBlue').get_figure()
+    plt.savefig(pathToSensorFolder+str(sensor)+"/test_features/"+columnName+".pdf")
+    cnt = cnt +1
+  skip = skip+1
+  '''
+
+#from sklearn.linear_model import Ridge
+#model = make_pipeline(GaussianFeatures(30), Ridge(alpha=0.1))
+#basis_plot(model, title='Ridge Regression')##
+#from sklearn.linear_model import Lasso
+#model = make_pipeline(GaussianFeatures(30), Lasso(alpha=0.001))
+#basis_plot(model, title='Lasso Regression')
